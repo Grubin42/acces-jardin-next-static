@@ -24,10 +24,13 @@ interface Project {
 
 export default function RealisationPage() {
   // État pour gérer l'image sélectionnée
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   
   // État pour activer/désactiver le défilement automatique
-  const [autoplayEnabled, setAutoplayEnabled] = useState(true)
+  const [autoplayEnabled, setAutoplayEnabled] = useState(true);
+  
+  // État pour suivre quel projet est survolé
+  const [hoveredProject, setHoveredProject] = useState<number | null>(null);
   
   // Fonction pour créer un plugin d'autoplay avec un délai différent selon la position
   const createPlugin = (index: number) => {
@@ -43,86 +46,91 @@ export default function RealisationPage() {
   // Fonction pour ouvrir l'image
   const handleImageClick = (image: string) => {
     setSelectedImage(image);
-    setAutoplayEnabled(false);
+    setHoveredProject(null);
   };
   
   // Fonction pour fermer l'image
   const handleCloseModal = () => {
     setSelectedImage(null);
-    
-    // Redémarrer le défilement après un court délai
-    setTimeout(() => {
-      setAutoplayEnabled(true);
-    }, 300);
+  };
+  
+  // Fonction pour rendu du carousel avec autoplay
+  const renderAutoplayCarousel = (project: Project, projectIndex: number) => {
+    return (
+      <Carousel 
+        className="w-full relative"
+        opts={{
+          loop: true,
+          duration: 80,
+        }}
+        plugins={[
+          createPlugin(projectIndex),
+          Fade()
+        ]}
+      >
+        <CarouselContent className="-ml-1">
+          {project.images.map((image: string, index: number) => (
+            <CarouselItem key={index} className="pl-1">
+              <div 
+                className="relative h-64 cursor-pointer overflow-hidden" 
+                onClick={() => handleImageClick(image)}
+              >
+                <Image
+                  src={image}
+                  alt={`${project.title} - Image ${index + 1}`}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  className="rounded-xs transition-opacity duration-700"
+                />
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-[#3A8E7F]/80 hover:bg-[#3A8E7F]" />
+        <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-[#3A8E7F]/80 hover:bg-[#3A8E7F]" />
+      </Carousel>
+    );
+  };
+  
+  // Fonction pour rendu du carousel statique (sans autoplay)
+  const renderStaticCarousel = (project: Project) => {
+    return (
+      <Carousel 
+        className="w-full relative"
+        opts={{
+          loop: true,
+        }}
+      >
+        <CarouselContent>
+          {project.images.map((image: string, index: number) => (
+            <CarouselItem key={index}>
+              <div 
+                className="relative h-64 cursor-pointer" 
+                onClick={() => handleImageClick(image)}
+              >
+                <Image
+                  src={image}
+                  alt={`${project.title} - Image ${index + 1}`}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  className="rounded-xs"
+                />
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-[#3A8E7F]/80 hover:bg-[#3A8E7F]" />
+        <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-[#3A8E7F]/80 hover:bg-[#3A8E7F]" />
+      </Carousel>
+    );
   };
   
   // Fonction pour render le carousel avec ou sans autoplay
   const renderCarousel = (project: Project, projectIndex: number) => {
     if (autoplayEnabled) {
-      return (
-        <Carousel 
-          className="w-full"
-          opts={{
-            loop: true,
-            duration: 80, // Durée plus longue pour une transition plus douce
-          }}
-          plugins={[
-            createPlugin(projectIndex),
-            Fade() // Effet de fondu
-          ]}
-        >
-          <CarouselContent className="-ml-1">
-            {project.images.map((image: string, index: number) => (
-              <CarouselItem key={index} className="pl-1">
-                <div 
-                  className="relative h-64 cursor-pointer overflow-hidden" 
-                  onClick={() => handleImageClick(image)}
-                >
-                  <Image
-                    src={image}
-                    alt={`${project.title} - Image ${index + 1}`}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                    className="rounded-xs transition-opacity duration-700"
-                  />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="left-2 bg-[#3A8E7F]" />
-          <CarouselNext className="right-2 bg-[#3A8E7F]" />
-        </Carousel>
-      );
+      return renderAutoplayCarousel(project, projectIndex);
     } else {
-      return (
-        <Carousel 
-          className="w-full"
-          opts={{
-            loop: true,
-          }}
-        >
-          <CarouselContent>
-            {project.images.map((image: string, index: number) => (
-              <CarouselItem key={index}>
-                <div 
-                  className="relative h-64 cursor-pointer" 
-                  onClick={() => handleImageClick(image)}
-                >
-                  <Image
-                    src={image}
-                    alt={`${project.title} - Image ${index + 1}`}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                    className="rounded-xs"
-                  />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="left-2 bg-[#3A8E7F]" />
-          <CarouselNext className="right-2 bg-[#3A8E7F]" />
-        </Carousel>
-      );
+      return renderStaticCarousel(project);
     }
   };
   
@@ -191,9 +199,17 @@ export default function RealisationPage() {
       {/* Grid de projets avec carrousel */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
         {projects.map((project, projectIndex) => (
-          <Card key={project.id} className="bg-[#3A8E7F] pt-0 rounded-xs border-none overflow-hidden">
+          <Card 
+            key={project.id} 
+            className="bg-[#3A8E7F] pt-0 rounded-xs border-none overflow-hidden"
+            onMouseEnter={() => setHoveredProject(project.id)}
+            onMouseLeave={() => setHoveredProject(null)}
+          >
             <div className="relative h-64">
-              {renderCarousel(project, projectIndex)}
+              {hoveredProject === project.id 
+                ? renderAutoplayCarousel(project, projectIndex)
+                : renderStaticCarousel(project)
+              }
             </div>
             
             <CardHeader>
