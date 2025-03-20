@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { ContactCTA } from '@/components/ContactCTA'
 import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 import Autoplay from 'embla-carousel-autoplay'
@@ -64,7 +64,7 @@ export default function RealisationPage() {
           className="w-full"
           opts={{
             loop: true,
-            duration: 40, // Durée plus longue pour une transition plus douce
+            duration: 80, // Durée plus longue pour une transition plus douce
           }}
           plugins={[
             createPlugin(projectIndex),
@@ -89,8 +89,6 @@ export default function RealisationPage() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          {/* <CarouselPrevious className="left-2 bg-[#3A8E7F] opacity-70 hover:opacity-100" />
-          <CarouselNext className="right-2 bg-[#3A8E7F] opacity-70 hover:opacity-100" /> */}
         </Carousel>
       );
     } else {
