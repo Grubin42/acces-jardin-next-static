@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { ContactCTA } from '@/components/ContactCTA'
 import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 import Autoplay from 'embla-carousel-autoplay'
@@ -40,76 +40,74 @@ export default function RealisationPage() {
     setSelectedImage(null);
   };
   
-  // Fonction pour rendre un carousel sans autoplay
-  const renderStaticCarousel = (project: Project) => {
-    return (
-      <Carousel 
-        className="w-full"
-        opts={{
-          loop: true,
-          duration: 80,
-        }}
-        plugins={[Fade()]}
-      >
-        <CarouselContent className="-ml-1">
-          {project.images.map((image: string, index: number) => (
-            <CarouselItem key={index} className="pl-1">
-              <div 
-                className="relative h-64 cursor-pointer overflow-hidden" 
-                onClick={() => handleImageClick(image)}
-              >
-                <Image
-                  src={image}
-                  alt={`${project.title} - Image ${index + 1}`}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  className="rounded-xs transition-opacity duration-700"
-                />
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
-    );
-  };
-  
-  // Fonction pour rendre un carousel avec autoplay
-  const renderAutoplayCarousel = (project: Project, projectIndex: number) => {
-    return (
-      <Carousel 
-        className="w-full"
-        opts={{
-          loop: true,
-          duration: 80,
-        }}
-        plugins={[
-          Autoplay({
-            delay: 3000 + (projectIndex * 1000),
-            stopOnInteraction: false,
-          }),
-          Fade()
-        ]}
-      >
-        <CarouselContent className="-ml-1">
-          {project.images.map((image: string, index: number) => (
-            <CarouselItem key={index} className="pl-1">
-              <div 
-                className="relative h-64 cursor-pointer overflow-hidden" 
-                onClick={() => handleImageClick(image)}
-              >
-                <Image
-                  src={image}
-                  alt={`${project.title} - Image ${index + 1}`}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  className="rounded-xs transition-opacity duration-700"
-                />
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
-    );
+  // Fonction pour render le carousel avec ou sans autoplay
+  const renderCarousel = (project: Project, projectIndex: number) => {
+    if (autoplayEnabled) {
+      return (
+        <Carousel 
+          className="w-full"
+          opts={{
+            loop: true,
+            duration: 80, // Durée plus longue pour une transition plus douce
+          }}
+          plugins={[
+            createPlugin(projectIndex),
+            Fade() // Effet de fondu
+          ]}
+        >
+          <CarouselContent className="-ml-1">
+            {project.images.map((image: string, index: number) => (
+              <CarouselItem key={index} className="pl-1">
+                <div 
+                  className="relative h-64 cursor-pointer overflow-hidden" 
+                  onClick={() => handleImageClick(image)}
+                >
+                  <Image
+                    src={image}
+                    alt={`${project.title} - Image ${index + 1}`}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    className="rounded-xs transition-opacity duration-700"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="left-2 bg-[#3A8E7F]" />
+          <CarouselNext className="right-2 bg-[#3A8E7F]" />
+        </Carousel>
+      );
+    } else {
+      return (
+        <Carousel 
+          className="w-full"
+          opts={{
+            loop: true,
+          }}
+        >
+          <CarouselContent>
+            {project.images.map((image: string, index: number) => (
+              <CarouselItem key={index}>
+                <div 
+                  className="relative h-64 cursor-pointer" 
+                  onClick={() => handleImageClick(image)}
+                >
+                  <Image
+                    src={image}
+                    alt={`${project.title} - Image ${index + 1}`}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    className="rounded-xs"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="left-2 bg-[#3A8E7F]" />
+          <CarouselNext className="right-2 bg-[#3A8E7F]" />
+        </Carousel>
+      );
+    }
   };
   
   // Données des projets avec plusieurs images par projet
