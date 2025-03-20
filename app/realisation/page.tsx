@@ -58,7 +58,7 @@ export default function RealisationPage() {
   const renderAutoplayCarousel = (project: Project, projectIndex: number) => {
     return (
       <Carousel 
-        className="w-full relative"
+        className="w-full relative group"
         opts={{
           loop: true,
           duration: 80,
@@ -86,8 +86,8 @@ export default function RealisationPage() {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-[#3A8E7F]/80 hover:bg-[#3A8E7F]" />
-        <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-[#3A8E7F]/80 hover:bg-[#3A8E7F]" />
+        <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-[#3A8E7F]/80 hover:bg-[#3A8E7F] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-[#3A8E7F]/80 hover:bg-[#3A8E7F] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </Carousel>
     );
   };
@@ -96,7 +96,7 @@ export default function RealisationPage() {
   const renderStaticCarousel = (project: Project) => {
     return (
       <Carousel 
-        className="w-full relative"
+        className="w-full relative group"
         opts={{
           loop: true,
         }}
@@ -119,8 +119,8 @@ export default function RealisationPage() {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-[#3A8E7F]/80 hover:bg-[#3A8E7F]" />
-        <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-[#3A8E7F]/80 hover:bg-[#3A8E7F]" />
+        <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-[#3A8E7F]/80 hover:bg-[#3A8E7F] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-[#3A8E7F]/80 hover:bg-[#3A8E7F] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </Carousel>
     );
   };
@@ -206,7 +206,7 @@ export default function RealisationPage() {
             onMouseLeave={() => setHoveredProject(null)}
           >
             <div className="relative h-64">
-              {hoveredProject === project.id 
+              {autoplayEnabled 
                 ? renderAutoplayCarousel(project, projectIndex)
                 : renderStaticCarousel(project)
               }
