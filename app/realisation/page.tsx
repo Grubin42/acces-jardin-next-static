@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { ContactCTA } from '@/components/ContactCTA'
 import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 import Autoplay from 'embla-carousel-autoplay'
@@ -89,6 +89,8 @@ export default function RealisationPage() {
               </CarouselItem>
             ))}
           </CarouselContent>
+          <CarouselPrevious className="left-2 bg-[#3A8E7F]" />
+          <CarouselNext className="right-2 bg-[#3A8E7F]" />
         </Carousel>
       );
     } else {
@@ -117,8 +119,8 @@ export default function RealisationPage() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          {/* <CarouselPrevious className="left-2 bg-[#3A8E7F]" />
-          <CarouselNext className="right-2 bg-[#3A8E7F]" /> */}
+          <CarouselPrevious className="left-2 bg-[#3A8E7F]" />
+          <CarouselNext className="right-2 bg-[#3A8E7F]" />
         </Carousel>
       );
     }
