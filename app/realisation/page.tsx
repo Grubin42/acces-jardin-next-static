@@ -7,10 +7,124 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
+import Autoplay from 'embla-carousel-autoplay'
+import Fade from 'embla-carousel-fade'
+
+// Types pour nos objets
+type ProjectImage = string;
+
+interface Project {
+  id: number;
+  title: string;
+  description: string;
+  location: string;
+  year: string;
+  images: ProjectImage[];
+}
 
 export default function RealisationPage() {
   // État pour gérer l'image sélectionnée
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  
+  // État pour activer/désactiver le défilement automatique
+  const [autoplayEnabled, setAutoplayEnabled] = useState(true)
+  
+  // Fonction pour créer un plugin d'autoplay avec un délai différent selon la position
+  const createPlugin = (index: number) => {
+    // Configurer un délai différent pour chaque carrousel
+    const delay = 3000 + (index * 1000); // 3 secondes + 1 seconde par index
+    
+    return Autoplay({
+      delay: delay,
+      stopOnInteraction: true,
+    });
+  };
+  
+  // Fonction pour ouvrir l'image
+  const handleImageClick = (image: string) => {
+    setSelectedImage(image);
+    setAutoplayEnabled(false);
+  };
+  
+  // Fonction pour fermer l'image
+  const handleCloseModal = () => {
+    setSelectedImage(null);
+    
+    // Redémarrer le défilement après un court délai
+    setTimeout(() => {
+      setAutoplayEnabled(true);
+    }, 300);
+  };
+  
+  // Fonction pour render le carousel avec ou sans autoplay
+  const renderCarousel = (project: Project, projectIndex: number) => {
+    if (autoplayEnabled) {
+      return (
+        <Carousel 
+          className="w-full"
+          opts={{
+            loop: true,
+            duration: 40, // Durée plus longue pour une transition plus douce
+          }}
+          plugins={[
+            createPlugin(projectIndex),
+            Fade() // Effet de fondu
+          ]}
+        >
+          <CarouselContent className="-ml-1">
+            {project.images.map((image: string, index: number) => (
+              <CarouselItem key={index} className="pl-1">
+                <div 
+                  className="relative h-64 cursor-pointer overflow-hidden" 
+                  onClick={() => handleImageClick(image)}
+                >
+                  <Image
+                    src={image}
+                    alt={`${project.title} - Image ${index + 1}`}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    className="rounded-xs transition-opacity duration-700"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          {/* <CarouselPrevious className="left-2 bg-[#3A8E7F] opacity-70 hover:opacity-100" />
+          <CarouselNext className="right-2 bg-[#3A8E7F] opacity-70 hover:opacity-100" /> */}
+        </Carousel>
+      );
+    } else {
+      return (
+        <Carousel 
+          className="w-full"
+          opts={{
+            loop: true,
+          }}
+        >
+          <CarouselContent>
+            {project.images.map((image: string, index: number) => (
+              <CarouselItem key={index}>
+                <div 
+                  className="relative h-64 cursor-pointer" 
+                  onClick={() => handleImageClick(image)}
+                >
+                  <Image
+                    src={image}
+                    alt={`${project.title} - Image ${index + 1}`}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    className="rounded-xs"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          {/* <CarouselPrevious className="left-2 bg-[#3A8E7F]" />
+          <CarouselNext className="right-2 bg-[#3A8E7F]" /> */}
+        </Carousel>
+      );
+    }
+  };
   
   // Données des projets avec plusieurs images par projet
   const projects = [
@@ -76,35 +190,10 @@ export default function RealisationPage() {
       
       {/* Grid de projets avec carrousel */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-        {projects.map((project) => (
+        {projects.map((project, projectIndex) => (
           <Card key={project.id} className="bg-[#3A8E7F] pt-0 rounded-xs border-none overflow-hidden">
             <div className="relative h-64">
-              <Carousel 
-                className="w-full"
-                opts={{
-                  loop: true,
-                }}>
-                <CarouselContent>
-                  {project.images.map((image, index) => (
-                    <CarouselItem key={index}>
-                      <div 
-                        className="relative h-64 cursor-pointer" 
-                        onClick={() => setSelectedImage(image)}
-                      >
-                        <Image
-                          src={image}
-                          alt={`${project.title} - Image ${index + 1}`}
-                          fill
-                          style={{ objectFit: 'cover' }}
-                          className="rounded-xs"
-                        />
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="left-2 bg-[#3A8E7F]" />
-                <CarouselNext className="right-2 bg-[#3A8E7F]" />
-              </Carousel>
+              {renderCarousel(project, projectIndex)}
             </div>
             
             <CardHeader>
@@ -127,7 +216,7 @@ export default function RealisationPage() {
       {selectedImage && (
         <div 
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
-          onClick={() => setSelectedImage(null)}
+          onClick={handleCloseModal}
         >
           <div className="relative h-[80vh] w-full max-w-4xl p-4">
             <Button 
@@ -136,7 +225,7 @@ export default function RealisationPage() {
               className="absolute right-4 top-4 z-10 bg-black/50 text-white rounded-full"
               onClick={(e) => {
                 e.stopPropagation();
-                setSelectedImage(null);
+                handleCloseModal();
               }}
             >
               <X className="h-6 w-6" />
