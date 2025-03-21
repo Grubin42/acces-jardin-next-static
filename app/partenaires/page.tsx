@@ -48,7 +48,7 @@ const partners: Partner[] = [
   {
     id: 1,
     name: "L'Apothèque du Jorat",
-    logo: "/images/logo.png",
+    logo: "/images/logo-apo.png",
     description: "Située  à Mézières, L'Apothèque du Jorat est une pépinière biodynamique, labellisée Demeter. Spécialisée dans la culture de plantes utiles et majoritairement indigènes, elle propose une riche diversité de plantes aromatiques, médicinales, ainsi que de plantons de légumes, parfaits pour enrichir vos jardins et potagers. Les produits de la pépinière sont disponibles au marché de Lausanne, où vous pourrez les découvrir dans une ambiance conviviale, mais également lors des foires horticoles de la région, où la passion pour les plantes rassemble amateurs et experts. Pour ceux qui préfèrent la proximité et l'autonomie, un espace de self-service est aménagé à proximité de la pépinière, permettant d'accéder facilement à une sélection de plantes tout au long de la saison.",
     website: "https://www.apothequedujorat.ch",
     images: [
@@ -179,13 +179,13 @@ export default function PartenairesPage() {
                         <ExternalLink className="h-5 w-5 opacity-80 hover:opacity-100" />
                       </Link>
                     </div>
-                    <div className="h-16 w-16 relative">
+                    <div className="h-20 w-32 relative">
                       <Image 
                         src={partner.logo} 
                         alt={`Logo ${partner.name}`} 
                         fill
                         style={{ objectFit: 'contain' }}
-                        className="bg-white p-1"
+                        className=" p-1"
                       />
                     </div>
                   </div>
@@ -194,7 +194,7 @@ export default function PartenairesPage() {
                 <CardContent className="flex-grow overflow-hidden relative px-0">
                   <div 
                     ref={(el) => setDescriptionRef(partner.id, el)}
-                    className="max-h-[220px] md:max-h-[280px] overflow-y-auto pr-2 custom-scrollbar"
+                    className="max-h-[220px] md:max-h-[250px] overflow-y-auto pr-2 custom-scrollbar"
                     onScroll={(e) => {
                       const target = e.currentTarget;
                       const isAtBottom = Math.abs((target.scrollHeight - target.scrollTop) - target.clientHeight) < 5;
